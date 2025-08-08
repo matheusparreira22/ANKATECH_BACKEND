@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id            String       @id @default(cuid())
+  name          String
+  email         String       @unique
+  password      String
+  role          String       @default("viewer")
+  age           Int?
+  status        String       @default("active")
+  perfilFamilia String?
+  goals         Goal[]
+  wallet        Wallet?
+  events        Event[]
+  simulations   Simulation[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  InsuranceProfile InsuranceProfile?
+}
+
+model Goal {
+  id        String   @id @default(cuid())
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  String
+  type      String
+  amount    Decimal
+  targetAt  DateTime
+  createdAt DateTime @default(now())
+}
+
+model Wallet {
+  id         String  @id @default(cuid())
+  client     Client  @relation(fields: [clientId], references: [id])
+  clientId   String  @unique
+  totalValue Decimal
+  allocation Json
+}
+
+model Event {
+  id        String    @id @default(cuid())
+  client    Client    @relation(fields: [clientId], references: [id])
+  clientId  String
+  type      String
+  value     Decimal
+  frequency String?
+  date      DateTime?
+}
+
+model Simulation {
+  id        String   @id @default(cuid())
+  client    Client   @relation(fields: [clientId], references: [id])
+  clientId  String
+  payload   Json
+  createdAt DateTime @default(now())
+}
+
+model InsuranceProfile {
+  id       String @id @default(cuid())
+  client   Client @relation(fields: [clientId], references: [id])
+  clientId String @unique
+  type     String
+  details  Json
+}
