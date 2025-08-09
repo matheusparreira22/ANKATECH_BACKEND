@@ -178,6 +178,27 @@ PUT    /api/clients/:id     # Atualizar cliente (advisor only)
 DELETE /api/clients/:id     # Deletar cliente (advisor only)
 ```
 
+### **Projeções** (`/api/projections`) ✅ **IMPLEMENTADO**
+```
+GET    /api/projections/client/:id              # Projeção completa do cliente
+GET    /api/projections/client/:id/annual       # Projeção anual simplificada
+POST   /api/projections/simulate                # Simulação com parâmetros customizados
+POST   /api/projections/client/:id/save         # Salvar simulação
+GET    /api/projections/client/:id/simulations  # Listar simulações salvas
+GET    /api/projections/simulations/:id         # Obter simulação específica
+DELETE /api/projections/simulations/:id         # Deletar simulação
+```
+
+### **Sugestões** (`/api/suggestions`) ✅ **IMPLEMENTADO**
+```
+GET    /api/suggestions/client/:id                    # Análise completa e sugestões
+GET    /api/suggestions/client/:id/summary            # Resumo das sugestões
+GET    /api/suggestions/client/:id/alignment          # Análise de alinhamento
+POST   /api/suggestions/client/:id/simulate           # Simular impacto de sugestão
+GET    /api/suggestions/client/:id/category/:category # Sugestões por categoria
+GET    /api/suggestions/stats                         # Estatísticas gerais
+```
+
 ### **Utilitários**
 ```
 GET /health                 # Health check
@@ -206,8 +227,9 @@ docker-compose down        # Parar containers
 - Password: `plannerpw`
 
 ## 📊 **Métricas de Qualidade**
-- ✅ **Cobertura de Testes**: 80.11%
-- ✅ **Testes Passando**: 19/19 (100%)
+- ✅ **Cobertura de Testes**: 79.32%
+- ✅ **Testes Passando**: 34/34 (100%)
+- ✅ **Endpoints Funcionais**: 21 endpoints implementados
 - ✅ **TypeScript**: Strict mode habilitado
 - ✅ **ESLint**: Configurado com Prettier
 - ✅ **Segurança**: JWT + bcrypt + validação
@@ -219,11 +241,12 @@ docker-compose down        # Parar containers
 - ⏳ **Dia 4**: SSE para importação de CSV (próximo)
 
 ## 🛠️ **Próximos Passos**
-1. Implementar motor de projeção patrimonial
-2. Desenvolver sistema de sugestões automáticas
-3. Adicionar SSE para importação de CSV
-4. Implementar histórico de simulações
+1. ✅ ~~Implementar motor de projeção patrimonial~~ **CONCLUÍDO**
+2. ✅ ~~Desenvolver sistema de sugestões automáticas~~ **CONCLUÍDO**
+3. Adicionar SSE para importação de CSV (Dia 4)
+4. Implementar histórico de simulações (Dia 5)
 5. Completar CRUD de goals, wallet e events
+6. Adicionar documentação Swagger automática
 
 ---
 

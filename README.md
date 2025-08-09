@@ -7,8 +7,9 @@ Sistema completo com autenticação JWT, autorização baseada em roles, CRUD de
 ## ✨ Status do Projeto
 
 - ✅ **Dia 1**: Configuração inicial e arquitetura
-- ✅ **Dia 2**: Autenticação, CRUD de clientes, testes (80.11% cobertura)
-- ⏳ **Dia 3**: Motor de projeção patrimonial (próximo)
+- ✅ **Dia 2**: Autenticação, CRUD de clientes, testes
+- ✅ **Dia 3**: Motor de projeção patrimonial e sistema de sugestões (79.32% cobertura)
+- ⏳ **Dia 4**: SSE para importação de CSV (próximo)
 
 ## 🛠️ Pré-requisitos
 
@@ -100,6 +101,27 @@ PUT    /api/events/:id     # Atualizar evento
 DELETE /api/events/:id     # Deletar evento
 ```
 
+### 🔮 **Projeções** (`/api/projections`) ✅ **IMPLEMENTADO**
+```bash
+GET    /api/projections/client/:id              # Projeção completa do cliente
+GET    /api/projections/client/:id/annual       # Projeção anual simplificada
+POST   /api/projections/simulate                # Simulação com parâmetros customizados
+POST   /api/projections/client/:id/save         # Salvar simulação
+GET    /api/projections/client/:id/simulations  # Listar simulações salvas
+GET    /api/projections/simulations/:id         # Obter simulação específica
+DELETE /api/projections/simulations/:id         # Deletar simulação
+```
+
+### 💡 **Sugestões** (`/api/suggestions`) ✅ **IMPLEMENTADO**
+```bash
+GET    /api/suggestions/client/:id                    # Análise completa e sugestões
+GET    /api/suggestions/client/:id/summary            # Resumo das sugestões
+GET    /api/suggestions/client/:id/alignment          # Análise de alinhamento
+POST   /api/suggestions/client/:id/simulate           # Simular impacto de sugestão
+GET    /api/suggestions/client/:id/category/:category # Sugestões por categoria
+GET    /api/suggestions/stats                         # Estatísticas gerais
+```
+
 ### 🔧 **Utilitários** ✅ **IMPLEMENTADO**
 ```bash
 GET /health               # Health check do sistema
@@ -175,9 +197,10 @@ curl -X GET http://localhost:3000/api/clients \
 
 ## 🧪 Testes e Qualidade
 
-- **19 testes unitários** implementados
-- **80.11% de cobertura** (acima do objetivo de 80%)
+- **34 testes unitários** implementados
+- **79.32% de cobertura** (próximo ao objetivo de 80%)
 - **Jest + Supertest** para testes de API
+- **Testes de projeções e sugestões** incluídos
 - **Limpeza automática** do banco entre testes
 - **TypeScript strict mode** habilitado
 
@@ -194,8 +217,9 @@ curl -X GET http://localhost:3000/api/clients \
 
 ## 📊 Métricas de Desenvolvimento
 
-- ✅ **Cobertura de Testes**: 80.11%
-- ✅ **Testes Passando**: 19/19 (100%)
+- ✅ **Cobertura de Testes**: 79.32%
+- ✅ **Testes Passando**: 34/34 (100%)
+- ✅ **Endpoints Funcionais**: 21 endpoints
 - ✅ **TypeScript**: Strict mode
 - ✅ **ESLint**: Configurado
 - ✅ **Segurança**: JWT + bcrypt + validação
