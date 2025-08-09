@@ -11,7 +11,7 @@ import authRoutes from './routes/auth'
 import clientRoutes from './routes/clients'
 import projectionRoutes from './routes/projections'
 import suggestionRoutes from './routes/suggestions'
-// import importRoutes from './routes/import' // Temporariamente desabilitado
+import importRoutes from './routes/import'
 import insuranceRoutes from './routes/insurance'
 // import goalRoutes from './routes/goals'
 // import walletRoutes from './routes/wallet'
@@ -19,11 +19,49 @@ import insuranceRoutes from './routes/insurance'
 
 const app = Fastify({ logger: true })
 
-// Swagger documentation (temporariamente desabilitado para simplificar)
-// TODO: Implementar Swagger com import dinâmico adequado
+// Register Swagger documentation
+app.register(async function (fastify) {
+  const swagger = await import('@fastify/swagger')
+  const swaggerUi = await import('@fastify/swagger-ui')
+
+  await fastify.register(swagger.default, {
+    swagger: {
+      info: {
+        title: 'ANKATECH Backend API',
+        description: 'API para sistema de planejamento financeiro',
+        version: '0.5.0'
+      },
+      host: 'localhost:3000',
+      schemes: ['http'],
+      consumes: ['application/json'],
+      produces: ['application/json'],
+      securityDefinitions: {
+        Bearer: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header',
+          description: 'JWT token. Formato: Bearer <token>'
+        }
+      }
+    }
+  })
+
+  await fastify.register(swaggerUi.default, {
+    routePrefix: '/docs',
+    uiConfig: {
+      docExpansion: 'list',
+      deepLinking: false
+    },
+    staticCSP: true,
+    transformStaticCSP: (header: string) => header
+  })
+})
 
 app.register(jwt, { secret: process.env.JWT_SECRET || 'changeme' })
 app.register(cors, { origin: '*' })
+// Rate limiting (temporariamente desabilitado por problemas de compatibilidade)
+// TODO: Implementar rate limiting com versão compatível do Fastify
+
 app.register(prismaPlugin)
 app.register(authPlugin)
 
@@ -32,7 +70,7 @@ app.register(authRoutes, { prefix: '/api/auth' })
 app.register(clientRoutes, { prefix: '/api' })
 app.register(projectionRoutes, { prefix: '/api' })
 app.register(suggestionRoutes, { prefix: '/api' })
-// app.register(importRoutes, { prefix: '/api' }) // Temporariamente desabilitado - problemas de compatibilidade
+app.register(importRoutes, { prefix: '/api' })
 app.register(insuranceRoutes, { prefix: '/api' })
 // app.register(goalRoutes, { prefix: '/api' })
 // app.register(walletRoutes, { prefix: '/api' }) // Temporariamente desabilitado

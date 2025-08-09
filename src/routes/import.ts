@@ -8,7 +8,8 @@ export default async function importRoutes(app: FastifyInstance) {
   const csvImportService = new CsvImportService(app.prisma)
 
   // Registrar plugin multipart
-  await app.register(import('@fastify/multipart'), {
+  const multipart = await import('@fastify/multipart')
+  await app.register(multipart.default, {
     limits: {
       fileSize: 5 * 1024 * 1024 // 5MB
     }

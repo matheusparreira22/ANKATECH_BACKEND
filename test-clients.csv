@@ -1,0 +1,4 @@
+name,email,password,age,role,status,perfilFamilia
+João Silva,joao@exemplo.com,senha123,35,viewer,active,Casado com 2 filhos
+Maria Santos,maria@exemplo.com,senha456,28,viewer,active,Solteira
+Pedro Oliveira,pedro@exemplo.com,senha789,42,viewer,active,Casado com 1 filho

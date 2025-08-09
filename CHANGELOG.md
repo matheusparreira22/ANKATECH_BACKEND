@@ -5,6 +5,72 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [0.5.0] - 2024-01-09
+
+### ✨ Adicionado
+- **Sistema de Cache Inteligente**
+  - Cache em memória com TTL configurável
+  - Cache por tags para invalidação em grupo
+  - Otimização de performance para projeções e sugestões
+  - Limpeza automática de entradas expiradas
+
+- **SSE para Importação de CSV**
+  - Server-Sent Events para progresso em tempo real
+  - Importação de clientes e metas via CSV
+  - Validação de arquivos CSV antes da importação
+  - Templates CSV para download
+  - Histórico de importações
+
+- **Sistema Completo de Seguros**
+  - CRUD completo para apólices de seguro
+  - 7 tipos de seguro (vida, invalidez, saúde, auto, residencial, viagem, outros)
+  - 4 status (ativo, inativo, expirado, cancelado)
+  - Gestão de beneficiários com validação
+  - Resumos estatísticos por cliente
+  - Atualização automática de apólices expiradas
+
+- **Histórico Avançado de Simulações**
+  - Salvamento com metadados (nome, descrição, tags)
+  - Comparação de múltiplas simulações
+  - Estatísticas detalhadas por cliente
+  - Filtros e ordenação avançados
+
+- **Otimizações de Performance**
+  - Rate limiting (100 req/min)
+  - Índices de banco de dados otimizados
+  - Cache inteligente para consultas frequentes
+  - Paginação otimizada
+
+- **Documentação Swagger Completa**
+  - Interface interativa em `/docs`
+  - Documentação automática de todos os endpoints
+  - Exemplos de uso e schemas
+
+### 🧪 Testes
+- **40+ novos testes** para todas as funcionalidades
+- **Total de 100+ testes** passando (95%+)
+- **Cobertura de 70.15%** (melhoria significativa)
+- Testes para cache, importação, seguros e histórico
+- Testes de performance e rate limiting
+
+### 📚 Documentação
+- **Guia completo de deploy** (DEPLOY.md)
+- **Documentação Swagger** ativa
+- **Exemplos de uso** atualizados
+- **Guias de troubleshooting**
+
+### 🔧 Infraestrutura
+- Compatibilidade ESM resolvida
+- Import dinâmico para plugins Fastify
+- Configuração de produção otimizada
+- Scripts de backup e monitoramento
+
+### 🛡️ Segurança
+- Rate limiting implementado
+- Validação robusta de uploads
+- Sanitização de dados CSV
+- Headers de segurança
+
 ## [0.3.0] - 2024-01-09
 
 ### ✨ Adicionado

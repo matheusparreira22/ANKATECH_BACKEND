@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { SuggestionService } from '../services/suggestions'
 import { ProjectionService } from '../services/projection'
+import { cache, CacheService } from '../services/cache'
 import { validateParams, validateBody } from '../libs/validation'
 import { idParamSchema } from '../schemas'
 import { z } from 'zod'
@@ -26,7 +27,15 @@ export default async function suggestionRoutes(app: FastifyInstance) {
     try {
       const { id } = request.params as any
 
-      const analysis = await suggestionService.generateSuggestions(id)
+      // Generate cache key
+      const cacheKey = CacheService.suggestionKey(id)
+
+      // Try to get from cache first
+      const analysis = await cache.getOrSet(
+        cacheKey,
+        () => suggestionService.generateSuggestions(id),
+        5 * 60 * 1000 // 5 minutes cache
+      )
       
       reply.send({
         success: true,

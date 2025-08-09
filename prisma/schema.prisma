@@ -25,6 +25,10 @@ model Client {
   updatedAt     DateTime     @updatedAt
 
   InsuranceProfile InsuranceProfile?
+
+  @@index([status])
+  @@index([role])
+  @@index([createdAt])
 }
 
 model Goal {
@@ -62,6 +66,9 @@ model Simulation {
   payload   Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([clientId])
+  @@index([createdAt])
 }
 
 model InsuranceProfile {
@@ -90,6 +97,10 @@ model Insurance {
 
   client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
 
+  @@index([clientId])
+  @@index([type])
+  @@index([status])
+  @@index([endDate])
   @@map("insurances")
 }
 

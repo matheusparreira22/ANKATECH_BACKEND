@@ -1,6 +1,7 @@
 import type { FastifyInstance } from 'fastify'
 import { ProjectionService } from '../services/projection'
 import { SimulationHistoryService } from '../services/simulation-history'
+import { cache, CacheService } from '../services/cache'
 import { validateParams, validateQuery, validateBody } from '../libs/validation'
 import { idParamSchema } from '../schemas'
 import { z } from 'zod'
@@ -37,7 +38,15 @@ export default async function projectionRoutes(app: FastifyInstance) {
       const { id } = request.params as any
       const { annualRate } = request.query as any
 
-      const projection = await projectionService.createClientProjection(id, annualRate)
+      // Generate cache key
+      const cacheKey = CacheService.projectionKey(id, { annualRate })
+
+      // Try to get from cache first
+      const projection = await cache.getOrSet(
+        cacheKey,
+        () => projectionService.createClientProjection(id, annualRate),
+        2 * 60 * 1000 // 2 minutes cache
+      )
       
       reply.send({
         success: true,
