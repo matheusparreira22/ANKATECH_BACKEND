@@ -117,6 +117,25 @@ docker-compose.yml          # PostgreSQL containerizado
 - **Tratamento de erros** consistente
 - **Middleware de autorização** baseado em roles
 
+### 🔮 **Motor de Projeção Patrimonial**
+- **Simulação de crescimento composto** mensal até 2060
+- **Taxa padrão de 4% a.a.** (configurável)
+- **Suporte a eventos financeiros** (únicos, mensais, anuais)
+- **Projeções precisas** com arredondamento para 2 casas decimais
+- **Cálculo de retorno total** e valor final
+
+### 💡 **Sistema de Sugestões Automáticas**
+- **Análise de viabilidade** das metas financeiras
+- **5 tipos de sugestões** inteligentes:
+  - Aumentar contribuição mensal
+  - Estender prazo da meta
+  - Ajustar valor da meta
+  - Otimizar alocação de ativos
+  - Reduzir despesas
+- **Priorização automática** (alta/média/baixa)
+- **Simulação de impacto** das sugestões
+- **Categorização** por tipo de ação
+
 ### 🏗️ **Infraestrutura**
 - **Servidor Fastify** rodando na porta 3000
 - **Banco PostgreSQL 15** via Docker Compose
@@ -126,10 +145,12 @@ docker-compose.yml          # PostgreSQL containerizado
 - **Health check** endpoint (`/health`)
 
 ## 🧪 **Testes Implementados**
-- **19 testes unitários** com Jest e Supertest
-- **Cobertura de 80.11%** (acima do objetivo de 80%)
+- **34 testes unitários** com Jest e Supertest
+- **Cobertura de 79.32%** (próximo ao objetivo de 80%)
 - **Testes de autenticação**: registro, login, perfil, validações
 - **Testes de clientes**: CRUD, paginação, autorização
+- **Testes de projeções**: simulações, cálculos, validações
+- **Testes de sugestões**: análise, impacto, categorização
 - **Limpeza automática** do banco entre testes
 - **Configuração ESM** com TypeScript
 
@@ -194,7 +215,8 @@ docker-compose down        # Parar containers
 ## 🔄 **Status do Desenvolvimento**
 - ✅ **Dia 1**: Configuração inicial e arquitetura
 - ✅ **Dia 2**: Autenticação, CRUD de clientes, testes
-- ⏳ **Dia 3**: Motor de projeção patrimonial (próximo)
+- ✅ **Dia 3**: Motor de projeção patrimonial e sistema de sugestões
+- ⏳ **Dia 4**: SSE para importação de CSV (próximo)
 
 ## 🛠️ **Próximos Passos**
 1. Implementar motor de projeção patrimonial

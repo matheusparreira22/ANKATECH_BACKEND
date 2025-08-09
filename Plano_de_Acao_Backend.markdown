@@ -45,4 +45,79 @@ O backend será desenvolvido com Node.js 20, Fastify 4, TypeScript, Prisma ORM (
 - **Tarefas**:
   - Criar função `simulateWealthCurve(initialState, events, rate)`:
     - Calcular crescimento composto mensal com a fórmula: `valor = inicial * (1 + taxa/12)^(meses)`.
-    - Ajustar para eventos únicos/rec
+    - Ajustar para eventos únicos/recorrentes (positivos/negativos).
+    - Retornar array de `{year, projectedValue}` até 2060.
+  - Implementar endpoint para projeção com taxa padrão (4% a.a.).
+  - Desenvolver serviço de sugestões:
+    - Analisar diferença de alinhamento (`valor_planejado - valor_atual`).
+    - Gerar sugestões (ex.: "Aumente a contribuição em R$410 por 24 meses").
+  - Escrever testes unitários e de integração para projeção e sugestões.
+- **Entregáveis**:
+  - Função e endpoint de projeção patrimonial.
+  - Serviço e endpoint de sugestões.
+  - Testes para projeção e sugestões (cobertura ≥80%).
+- **Tempo Estimado**: 8-10 horas.
+
+### Dia 4: SSE, Simulações e Seguros
+- **Objetivo**: Implementar SSE para importação de CSV, histórico de simulações e perfis de seguro.
+- **Tarefas**:
+  - Criar endpoint SSE para importação de CSV (ex.: clientes):
+    - Processar CSV em blocos, validar com Zod, atualizar banco.
+    - Enviar progresso (ex.: "Processado 50/100 linhas") via SSE.
+  - Implementar histórico de simulações:
+    - Salvar projeções com metadados (client_id, timestamp).
+    - Criar endpoints para listar e recuperar simulações.
+  - Desenvolver CRUD para perfis de seguro (vida/invalidez, detalhes).
+  - Escrever testes de integração e E2E para SSE, simulações e seguros.
+  - Finalizar documentação do Swagger.
+- **Entregáveis**:
+  - Endpoint SSE para CSV com progresso.
+  - Endpoints de histórico de simulações.
+  - Endpoints CRUD de seguros.
+  - Testes para SSE, simulações e seguros (cobertura ≥80%).
+  - Documentação completa do Swagger.
+- **Tempo Estimado**: 8-10 horas.
+
+### Dia 5: Testes e Refinamento
+- **Objetivo**: Garantir qualidade do código e cobertura de testes.
+- **Tarefas**:
+  - Executar suíte de testes (unitários, integração, E2E) com Jest/Supertest.
+  - Corrigir falhas e otimizar performance.
+  - Verificar cobertura de testes (mínimo 80%) com `jest --coverage`.
+  - Revisar código com ESLint para conformidade.
+- **Entregáveis**:
+  - Suíte de testes completa com cobertura ≥80%.
+  - Código otimizado e conforme ESLint.
+- **Tempo Estimado**: 4-6 horas.
+
+### Dia 6: Documentação
+- **Objetivo**: Finalizar documentação do backend.
+- **Tarefas**:
+  - Atualizar `README.md` com:
+    - Arquitetura (ex.: estrutura de pastas, fluxos).
+    - Lista de endpoints com descrição.
+    - Instruções de configuração (`docker compose up`).
+    - Suposições (ex.: formato CSV, moeda).
+  - Revisar documentação do Swagger para clareza.
+- **Entregáveis**:
+  - `README.md` completo.
+  - Documentação Swagger finalizada.
+- **Tempo Estimado**: 3-4 horas.
+
+### Dia 7: Implantação e Validação
+- **Objetivo**: Testar e preparar o backend para entrega.
+- **Tarefas**:
+  - Testar Docker Compose localmente (`docker compose up`).
+  - Validar integração com banco e endpoints.
+  - Garantir commits limpos e organizados.
+  - Empacotar repositório para entrega.
+- **Entregáveis**:
+  - Backend funcional com Docker.
+  - Repositório pronto para entrega.
+- **Tempo Estimado**: 3-4 horas.
+
+## Considerações
+- **Testes**: Priorizar testes para o motor de projeção (lógica central).
+- **Commits**: Fazer commits pequenos e descritivos (ex.: "Adiciona endpoint de projeção").
+- **Suposições**: Documentar no `README.md` (ex.: formato CSV, taxa padrão).
+- **Docker**: Garantir compatibilidade com o serviço PostgreSQL especificado.

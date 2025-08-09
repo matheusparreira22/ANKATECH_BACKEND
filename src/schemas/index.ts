@@ -91,6 +91,45 @@ export const paginationSchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(10)
 })
 
+// Projection schemas
+export const projectionEventSchema = z.object({
+  type: z.string().min(1, 'Event type is required'),
+  value: z.number('Value must be a number'),
+  frequency: z.enum(['once', 'monthly', 'yearly']).optional(),
+  startDate: z.string().datetime().optional(),
+  endDate: z.string().datetime().optional()
+})
+
+export const simulationSchema = z.object({
+  initialValue: z.number().positive('Initial value must be positive'),
+  events: z.array(projectionEventSchema).optional().default([]),
+  annualRate: z.number().min(0).max(1).optional().default(0.04),
+  startYear: z.number().int().min(2020).optional(),
+  endYear: z.number().int().max(2100).optional().default(2060)
+})
+
+export const projectionQuerySchema = z.object({
+  annualRate: z.coerce.number().min(0).max(1).optional().default(0.04),
+  startYear: z.coerce.number().int().min(2020).optional(),
+  endYear: z.coerce.number().int().max(2100).optional().default(2060)
+})
+
+// Suggestion schemas
+export const suggestionSimulationSchema = z.object({
+  suggestionId: z.string().min(1, 'Suggestion ID is required'),
+  type: z.enum(['increase_contribution', 'reduce_expenses', 'adjust_allocation', 'extend_timeline', 'reduce_goal']),
+  impact: z.object({
+    monthlyAmount: z.number().optional(),
+    totalAmount: z.number().optional(),
+    timeframe: z.number().int().positive().optional()
+  })
+})
+
+export const categoryParamSchema = z.object({
+  id: z.string().cuid('Invalid client ID'),
+  category: z.enum(['contribution', 'allocation', 'timeline', 'goal'])
+})
+
 // Type exports
 export type CreateClientInput = z.infer<typeof createClientSchema>
 export type UpdateClientInput = z.infer<typeof updateClientSchema>
@@ -103,3 +142,8 @@ export type CreateEventInput = z.infer<typeof createEventSchema>
 export type UpdateEventInput = z.infer<typeof updateEventSchema>
 export type IdParam = z.infer<typeof idParamSchema>
 export type PaginationQuery = z.infer<typeof paginationSchema>
+export type ProjectionEventInput = z.infer<typeof projectionEventSchema>
+export type SimulationInput = z.infer<typeof simulationSchema>
+export type ProjectionQuery = z.infer<typeof projectionQuerySchema>
+export type SuggestionSimulationInput = z.infer<typeof suggestionSimulationSchema>
+export type CategoryParam = z.infer<typeof categoryParamSchema>

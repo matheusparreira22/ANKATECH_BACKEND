@@ -9,6 +9,8 @@ import { authPlugin } from './libs/auth'
 // Import routes
 import authRoutes from './routes/auth'
 import clientRoutes from './routes/clients'
+import projectionRoutes from './routes/projections'
+import suggestionRoutes from './routes/suggestions'
 // import goalRoutes from './routes/goals'
 // import walletRoutes from './routes/wallet'
 // import eventRoutes from './routes/events'
@@ -38,9 +40,11 @@ app.register(authPlugin)
 // Register routes
 app.register(authRoutes, { prefix: '/api/auth' })
 app.register(clientRoutes, { prefix: '/api' })
+app.register(projectionRoutes, { prefix: '/api' })
+app.register(suggestionRoutes, { prefix: '/api' })
 // app.register(goalRoutes, { prefix: '/api' })
-// app.register(walletRoutes, { prefix: '/api' })
-// app.register(eventRoutes, { prefix: '/api' })
+// app.register(walletRoutes, { prefix: '/api' }) // Temporariamente desabilitado
+// app.register(eventRoutes, { prefix: '/api' }) // Temporariamente desabilitado
 
 // Health check endpoint
 app.get('/health', async () => {
