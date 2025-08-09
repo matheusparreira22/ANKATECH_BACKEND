@@ -1,52 +1,209 @@
 # ANKATECH_BACKEND - Documentação do Projeto
 
 ## Visão Geral
-Este projeto é uma API backend desenvolvida em Node.js com TypeScript, utilizando o framework Fastify. O objetivo é fornecer uma base robusta para autenticação, gerenciamento de clientes, metas financeiras, carteiras, eventos, simulações e perfis de seguro.
+Este projeto é uma API backend para planejamento financeiro e gestão patrimonial, desenvolvida em Node.js com TypeScript, utilizando o framework Fastify. O sistema oferece funcionalidades completas de autenticação, autorização baseada em roles, gerenciamento de clientes, metas financeiras, carteiras, eventos e simulações.
 
 ## Principais Tecnologias Utilizadas
-- **Node.js** + **TypeScript**
-- **Fastify** (framework web)
-- **Prisma ORM** (acesso ao banco de dados PostgreSQL)
-- **JWT** (autenticação)
-- **Swagger** (documentação automática de rotas)
-- **CORS** (controle de acesso)
+- **Node.js 20** + **TypeScript**
+- **Fastify 4** (framework web)
+- **Prisma ORM** (acesso ao banco de dados PostgreSQL 15)
+- **JWT** (autenticação e autorização)
+- **Zod v4** (validação de dados)
+- **bcrypt** (hash de senhas)
+- **Jest** + **Supertest** (testes unitários)
+- **ESLint** (formatação de código)
+- **Docker Compose** (containerização)
 
 ## Estrutura de Pastas
-- `src/`
-  - `index.ts`: Arquivo principal de inicialização do servidor Fastify.
-  - `libs/prisma.ts`: Plugin para integração do Prisma com o Fastify.
-  - `routes/`: Rotas da aplicação (ex: autenticação, clientes).
-  - `services/`: Serviços de negócio (a serem implementados).
-- `prisma/`
-  - `schema.prisma`: Definição dos modelos de dados e relações.
-  - `migrations/`: Migrações do banco de dados.
+```
+src/
+├── index.ts                 # Servidor principal Fastify
+├── libs/
+│   ├── prisma.ts           # Plugin Prisma para Fastify
+│   ├── auth.ts             # Middleware de autenticação JWT
+│   └── validation.ts       # Utilitários de validação Zod
+├── routes/
+│   ├── auth.ts             # Rotas de autenticação
+│   ├── clients.ts          # CRUD de clientes
+│   ├── goals.ts            # CRUD de metas (preparado)
+│   ├── wallet.ts           # CRUD de carteiras (preparado)
+│   └── events.ts           # CRUD de eventos (preparado)
+├── schemas/
+│   └── index.ts            # Schemas Zod para validação
+└── services/               # Serviços de negócio (futuro)
+
+prisma/
+├── schema.prisma           # Modelos de dados
+└── migrations/             # Migrações do banco
+
+tests/
+├── auth.test.ts            # Testes de autenticação
+├── clients.test.ts         # Testes de clientes
+└── setup.ts                # Configuração de testes
+
+docker-compose.yml          # PostgreSQL containerizado
+```
 
 ## Modelos de Dados (Prisma)
-- **Client**: Usuário principal do sistema, com informações pessoais, autenticação, status, perfil familiar, metas, carteira, eventos, simulações e perfil de seguro.
-- **Goal**: Metas financeiras associadas a um cliente.
-- **Wallet**: Carteira financeira do cliente, com valor total e alocação.
-- **Event**: Eventos financeiros do cliente (ex: receitas, despesas).
-- **Simulation**: Simulações financeiras realizadas pelo cliente.
-- **InsuranceProfile**: Perfil de seguro do cliente, com tipo e detalhes.
+
+### **Client** (Usuário/Cliente)
+- `id`: Identificador único (CUID)
+- `name`: Nome completo
+- `email`: Email único para login
+- `password`: Senha hasheada (bcrypt)
+- `role`: Papel no sistema (`advisor` | `viewer`)
+- `age`: Idade (opcional)
+- `status`: Status ativo/inativo
+- `perfilFamilia`: Perfil familiar (opcional)
+- Relacionamentos: goals, wallet, events, simulations, insuranceProfile
+
+### **Goal** (Metas Financeiras)
+- `id`: Identificador único
+- `clientId`: Referência ao cliente
+- `type`: Tipo da meta
+- `amount`: Valor alvo (Decimal)
+- `targetAt`: Data alvo
+- `createdAt`: Data de criação
+
+### **Wallet** (Carteira de Investimentos)
+- `id`: Identificador único
+- `clientId`: Referência ao cliente (único)
+- `totalValue`: Valor total da carteira (Decimal)
+- `allocation`: Alocação por classe de ativo (JSON)
+
+### **Event** (Eventos Financeiros)
+- `id`: Identificador único
+- `clientId`: Referência ao cliente
+- `type`: Tipo do evento
+- `value`: Valor do evento (Decimal)
+- `frequency`: Frequência (opcional)
+- `date`: Data do evento (opcional)
+
+### **Simulation** (Simulações)
+- `id`: Identificador único
+- `clientId`: Referência ao cliente
+- `payload`: Dados da simulação (JSON)
+- `createdAt`: Data de criação
+
+### **InsuranceProfile** (Perfil de Seguro)
+- `id`: Identificador único
+- `clientId`: Referência ao cliente (único)
+- `type`: Tipo de seguro
+- `details`: Detalhes do seguro (JSON)
 
 ## Funcionalidades Implementadas
-- Inicialização do servidor Fastify com plugins:
-  - Swagger para documentação de rotas
-  - JWT para autenticação
-  - CORS para controle de acesso
-  - Integração com Prisma via plugin
-- Estruturação dos modelos de dados no Prisma para suportar as entidades principais do domínio financeiro.
 
-## Scripts Úteis
-- `npm run dev`: Inicia o servidor em modo desenvolvimento.
-- `npm run build`: Compila o projeto TypeScript.
-- `npm start`: Executa o servidor a partir do código compilado.
-- `npm run prisma:migrate`: Executa as migrações do banco de dados.
+### 🔐 **Sistema de Autenticação e Autorização**
+- **Registro de usuários** com validação de dados
+- **Login com JWT** e hash de senhas (bcrypt)
+- **Middleware de autenticação** para rotas protegidas
+- **Sistema de roles**:
+  - `advisor`: Acesso completo (leitura e escrita)
+  - `viewer`: Acesso somente leitura
+- **Endpoint de perfil** (`/api/auth/me`)
 
-## Observações
-- O projeto está preparado para expansão, com rotas e serviços a serem implementados conforme as necessidades do domínio.
-- O uso de Prisma facilita a manutenção e evolução do banco de dados.
+### 👥 **Gerenciamento de Clientes**
+- **CRUD completo** para clientes
+- **Listagem com paginação** (`page`, `limit`)
+- **Busca por ID** com dados relacionados
+- **Atualização** (apenas advisors)
+- **Exclusão** (apenas advisors)
+- **Validação robusta** com Zod v4
+
+### 🛡️ **Segurança e Validação**
+- **Senhas hasheadas** com bcrypt (salt rounds: 10)
+- **Tokens JWT** com payload customizado
+- **Validação de entrada** com Zod em todos endpoints
+- **Tratamento de erros** consistente
+- **Middleware de autorização** baseado em roles
+
+### 🏗️ **Infraestrutura**
+- **Servidor Fastify** rodando na porta 3000
+- **Banco PostgreSQL 15** via Docker Compose
+- **Prisma ORM** com migrações automáticas
+- **CORS** configurado para desenvolvimento
+- **Logs estruturados** do Fastify
+- **Health check** endpoint (`/health`)
+
+## 🧪 **Testes Implementados**
+- **19 testes unitários** com Jest e Supertest
+- **Cobertura de 80.11%** (acima do objetivo de 80%)
+- **Testes de autenticação**: registro, login, perfil, validações
+- **Testes de clientes**: CRUD, paginação, autorização
+- **Limpeza automática** do banco entre testes
+- **Configuração ESM** com TypeScript
+
+### Executar Testes
+```bash
+npm test                    # Executar todos os testes
+npm test -- --coverage     # Executar com relatório de cobertura
+npm test -- --watch        # Executar em modo watch
+```
+
+## 📡 **API Endpoints**
+
+### **Autenticação** (`/api/auth`)
+```
+POST /api/auth/register     # Registrar usuário
+POST /api/auth/login        # Login
+GET  /api/auth/me          # Perfil do usuário logado
+```
+
+### **Clientes** (`/api/clients`)
+```
+GET    /api/clients         # Listar clientes (paginado)
+GET    /api/clients/:id     # Buscar cliente por ID
+PUT    /api/clients/:id     # Atualizar cliente (advisor only)
+DELETE /api/clients/:id     # Deletar cliente (advisor only)
+```
+
+### **Utilitários**
+```
+GET /health                 # Health check
+```
+
+## 🚀 **Scripts Disponíveis**
+```bash
+npm run dev                 # Servidor em desenvolvimento (tsx watch)
+npm run build              # Compilar TypeScript
+npm start                  # Executar servidor compilado
+npm run prisma:migrate     # Executar migrações do banco
+npm test                   # Executar testes
+npm run lint               # Verificar código com ESLint
+```
+
+## 🐳 **Docker e Banco de Dados**
+```bash
+docker-compose up -d       # Subir PostgreSQL
+docker-compose down        # Parar containers
+```
+
+**Configuração do Banco:**
+- Host: `localhost:5432`
+- Database: `plannerdb`
+- User: `planner`
+- Password: `plannerpw`
+
+## 📊 **Métricas de Qualidade**
+- ✅ **Cobertura de Testes**: 80.11%
+- ✅ **Testes Passando**: 19/19 (100%)
+- ✅ **TypeScript**: Strict mode habilitado
+- ✅ **ESLint**: Configurado com Prettier
+- ✅ **Segurança**: JWT + bcrypt + validação
+
+## 🔄 **Status do Desenvolvimento**
+- ✅ **Dia 1**: Configuração inicial e arquitetura
+- ✅ **Dia 2**: Autenticação, CRUD de clientes, testes
+- ⏳ **Dia 3**: Motor de projeção patrimonial (próximo)
+
+## 🛠️ **Próximos Passos**
+1. Implementar motor de projeção patrimonial
+2. Desenvolver sistema de sugestões automáticas
+3. Adicionar SSE para importação de CSV
+4. Implementar histórico de simulações
+5. Completar CRUD de goals, wallet e events
 
 ---
 
+## 📞 **Suporte**
 Para dúvidas ou contribuições, consulte o README.md ou entre em contato com o responsável pelo projeto.
