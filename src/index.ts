@@ -11,26 +11,16 @@ import authRoutes from './routes/auth'
 import clientRoutes from './routes/clients'
 import projectionRoutes from './routes/projections'
 import suggestionRoutes from './routes/suggestions'
+// import importRoutes from './routes/import' // Temporariamente desabilitado
+import insuranceRoutes from './routes/insurance'
 // import goalRoutes from './routes/goals'
 // import walletRoutes from './routes/wallet'
 // import eventRoutes from './routes/events'
 
 const app = Fastify({ logger: true })
 
-// Register plugins (temporarily disable swagger for simplicity)
-// app.register(swagger, {
-//   swagger: {
-//     info: {
-//       title: 'Ankatech Backend API',
-//       description: 'Financial planning and wealth management API',
-//       version: '0.1.0'
-//     }
-//   }
-// })
-
-// app.register(swaggerUi, {
-//   routePrefix: '/docs'
-// })
+// Swagger documentation (temporariamente desabilitado para simplificar)
+// TODO: Implementar Swagger com import dinâmico adequado
 
 app.register(jwt, { secret: process.env.JWT_SECRET || 'changeme' })
 app.register(cors, { origin: '*' })
@@ -42,6 +32,8 @@ app.register(authRoutes, { prefix: '/api/auth' })
 app.register(clientRoutes, { prefix: '/api' })
 app.register(projectionRoutes, { prefix: '/api' })
 app.register(suggestionRoutes, { prefix: '/api' })
+// app.register(importRoutes, { prefix: '/api' }) // Temporariamente desabilitado - problemas de compatibilidade
+app.register(insuranceRoutes, { prefix: '/api' })
 // app.register(goalRoutes, { prefix: '/api' })
 // app.register(walletRoutes, { prefix: '/api' }) // Temporariamente desabilitado
 // app.register(eventRoutes, { prefix: '/api' }) // Temporariamente desabilitado

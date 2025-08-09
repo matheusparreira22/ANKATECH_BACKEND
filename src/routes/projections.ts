@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { ProjectionService } from '../services/projection'
+import { SimulationHistoryService } from '../services/simulation-history'
 import { validateParams, validateQuery, validateBody } from '../libs/validation'
 import { idParamSchema } from '../schemas'
 import { z } from 'zod'
@@ -26,6 +27,7 @@ const simulationBodySchema = z.object({
 
 export default async function projectionRoutes(app: FastifyInstance) {
   const projectionService = new ProjectionService(app.prisma)
+  const simulationHistoryService = new SimulationHistoryService(app.prisma)
 
   // Obter projeção patrimonial de um cliente
   app.get('/projections/client/:id', {
@@ -226,6 +228,143 @@ export default async function projectionRoutes(app: FastifyInstance) {
       })
 
       reply.code(204).send()
+    } catch (error) {
+      app.log.error(error)
+      reply.code(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  // Salvar simulação com metadados
+  app.post('/projections/client/:id/save-with-metadata', {
+    preHandler: [app.authenticate, app.requireAdvisor, validateParams(idParamSchema), validateBody(z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+      annualRate: z.number().min(0).max(1).optional().default(0.04)
+    }))]
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params as any
+      const { name, description, tags, annualRate } = request.body as any
+
+      const projection = await projectionService.createClientProjection(id, annualRate)
+      const simulationId = await simulationHistoryService.saveSimulation(id, projection, {
+        name,
+        description,
+        tags
+      })
+
+      reply.code(201).send({
+        success: true,
+        data: {
+          simulationId,
+          projection
+        }
+      })
+    } catch (error) {
+      app.log.error(error)
+      if (error instanceof Error && error.message === 'Cliente não encontrado') {
+        return reply.code(404).send({ error: error.message })
+      }
+      reply.code(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  // Listar simulações de um cliente com filtros
+  app.get('/projections/client/:id/history', {
+    preHandler: [app.authenticate, app.requireAuth, validateParams(idParamSchema), validateQuery(z.object({
+      page: z.coerce.number().int().positive().optional().default(1),
+      limit: z.coerce.number().int().positive().max(50).optional().default(10),
+      tags: z.string().optional(),
+      sortBy: z.enum(['createdAt', 'finalValue', 'totalReturn']).optional().default('createdAt'),
+      sortOrder: z.enum(['asc', 'desc']).optional().default('desc')
+    }))]
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params as any
+      const { page, limit, tags, sortBy, sortOrder } = request.query as any
+
+      const tagsArray = tags ? tags.split(',').map((tag: string) => tag.trim()) : undefined
+
+      const result = await simulationHistoryService.getClientSimulations(id, {
+        page,
+        limit,
+        tags: tagsArray,
+        sortBy,
+        sortOrder
+      })
+
+      reply.send({
+        success: true,
+        data: result
+      })
+    } catch (error) {
+      app.log.error(error)
+      reply.code(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  // Comparar simulações
+  app.post('/projections/compare', {
+    preHandler: [app.authenticate, app.requireAuth, validateBody(z.object({
+      simulationIds: z.array(z.string().cuid()).min(2).max(5)
+    }))]
+  }, async (request, reply) => {
+    try {
+      const { simulationIds } = request.body as any
+
+      const comparison = await simulationHistoryService.compareSimulations(simulationIds)
+
+      reply.send({
+        success: true,
+        data: comparison
+      })
+    } catch (error) {
+      app.log.error(error)
+      reply.code(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  // Atualizar metadados de simulação
+  app.put('/projections/simulations/:id/metadata', {
+    preHandler: [app.authenticate, app.requireAdvisor, validateParams(idParamSchema), validateBody(z.object({
+      name: z.string().optional(),
+      description: z.string().optional(),
+      tags: z.array(z.string()).optional()
+    }))]
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params as any
+      const metadata = request.body as any
+
+      await simulationHistoryService.updateSimulationMetadata(id, metadata)
+
+      reply.send({
+        success: true,
+        message: 'Metadados atualizados com sucesso'
+      })
+    } catch (error) {
+      app.log.error(error)
+      if (error instanceof Error && error.message === 'Simulação não encontrada') {
+        return reply.code(404).send({ error: error.message })
+      }
+      reply.code(500).send({ error: 'Erro interno do servidor' })
+    }
+  })
+
+  // Estatísticas de simulações do cliente
+  app.get('/projections/client/:id/stats', {
+    preHandler: [app.authenticate, app.requireAuth, validateParams(idParamSchema)]
+  }, async (request, reply) => {
+    try {
+      const { id } = request.params as any
+
+      const stats = await simulationHistoryService.getClientSimulationStats(id)
+
+      reply.send({
+        success: true,
+        data: stats
+      })
     } catch (error) {
       app.log.error(error)
       reply.code(500).send({ error: 'Erro interno do servidor' })

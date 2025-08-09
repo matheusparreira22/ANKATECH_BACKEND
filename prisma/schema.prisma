@@ -20,6 +20,7 @@ model Client {
   wallet        Wallet?
   events        Event[]
   simulations   Simulation[]
+  insurances    Insurance[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -60,6 +61,7 @@ model Simulation {
   clientId  String
   payload   Json
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model InsuranceProfile {
@@ -68,4 +70,42 @@ model InsuranceProfile {
   clientId String @unique
   type     String
   details  Json
+}
+
+model Insurance {
+  id          String      @id @default(cuid())
+  clientId    String
+  type        InsuranceType
+  provider    String
+  policyNumber String?
+  coverage    Decimal     @db.Decimal(15, 2)
+  premium     Decimal     @db.Decimal(10, 2)
+  startDate   DateTime
+  endDate     DateTime?
+  status      InsuranceStatus @default(ACTIVE)
+  beneficiaries Json?
+  details     Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("insurances")
+}
+
+enum InsuranceType {
+  LIFE
+  DISABILITY
+  HEALTH
+  AUTO
+  HOME
+  TRAVEL
+  OTHER
+}
+
+enum InsuranceStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  CANCELLED
 }
