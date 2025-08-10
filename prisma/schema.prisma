@@ -21,6 +21,8 @@ model Client {
   events        Event[]
   simulations   Simulation[]
   insurances    Insurance[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 
@@ -104,6 +106,52 @@ model Insurance {
   @@map("insurances")
 }
 
+model Notification {
+  id          String             @id @default(cuid())
+  clientId    String
+  type        NotificationType
+  title       String
+  message     String
+  status      NotificationStatus @default(UNREAD)
+  metadata    Json?
+  scheduledAt DateTime?
+  readAt      DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@index([type])
+  @@index([status])
+  @@index([scheduledAt])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  clientId    String?
+  userId      String?
+  action      AuditAction
+  resource    String
+  resourceId  String?
+  oldValues   Json?
+  newValues   Json?
+  ipAddress   String?
+  userAgent   String?
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
 enum InsuranceType {
   LIFE
   DISABILITY
@@ -119,4 +167,29 @@ enum InsuranceStatus {
   INACTIVE
   EXPIRED
   CANCELLED
+}
+
+enum NotificationType {
+  INSURANCE_EXPIRING
+  GOAL_DEADLINE
+  PROJECTION_UPDATE
+  SYSTEM_ALERT
+  REMINDER
+  ACHIEVEMENT
+}
+
+enum NotificationStatus {
+  UNREAD
+  READ
+  ARCHIVED
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  EXPORT
+  IMPORT
 }

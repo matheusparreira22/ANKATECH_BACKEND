@@ -13,6 +13,9 @@ import projectionRoutes from './routes/projections'
 import suggestionRoutes from './routes/suggestions'
 import importRoutes from './routes/import'
 import insuranceRoutes from './routes/insurance'
+import notificationRoutes from './routes/notifications'
+import auditRoutes from './routes/audit'
+import dashboardRoutes from './routes/dashboard'
 // import goalRoutes from './routes/goals'
 // import walletRoutes from './routes/wallet'
 // import eventRoutes from './routes/events'
@@ -72,6 +75,9 @@ app.register(projectionRoutes, { prefix: '/api' })
 app.register(suggestionRoutes, { prefix: '/api' })
 app.register(importRoutes, { prefix: '/api' })
 app.register(insuranceRoutes, { prefix: '/api' })
+app.register(notificationRoutes, { prefix: '/api' })
+app.register(auditRoutes, { prefix: '/api' })
+app.register(dashboardRoutes, { prefix: '/api' })
 // app.register(goalRoutes, { prefix: '/api' })
 // app.register(walletRoutes, { prefix: '/api' }) // Temporariamente desabilitado
 // app.register(eventRoutes, { prefix: '/api' }) // Temporariamente desabilitado
@@ -83,8 +89,8 @@ app.get('/health', async () => {
 
 const start = async () => {
   try {
-    const port = Number(process.env.PORT || 3000)
-    await app.listen({ port, host: '0.0.0.0' })
+    const port = Number(process.env.PORT || 3001)
+    await app.listen({ port: port, host: '0.0.0.0' })
     app.log.info(`Server running on http://localhost:${port}`)
     app.log.info(`API documentation available at http://localhost:${port}/docs`)
   } catch (err) {
